@@ -20,8 +20,9 @@ services:
       - "./db:/docker-entrypoint-initdb.d"  # sync persistent sql files with container
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    platform: linux/amd64 # Fix for arm-based machine - using M-series chipset
     ports:
-      - 8001:80
+      - 8080:80 # Changed port as its already been taken
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
