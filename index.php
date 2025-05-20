@@ -1,10 +1,10 @@
 <?php
 session_start();
 
-$hostname = "localhost";
-$username = "root";
-$password = "MyNewPass";
-$database_name = "login_db";
+$hostname = "db";
+$username = "php_docker";
+$password = "password";
+$database_name = "php_docker";
 
 $db = mysqli_connect($hostname, $username, $password, $database_name);
 

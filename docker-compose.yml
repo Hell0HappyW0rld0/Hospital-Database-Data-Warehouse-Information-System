@@ -7,7 +7,7 @@ services:
     volumes:
       - "./:/var/www/html" # sync project dir with container web dir
     ports:
-      - 80:80
+      - 8080:80  # Changed port as its already been taken
       - 443:443 # for future ssl traffic
   db:
     image: mysql:latest
@@ -22,7 +22,7 @@ services:
     image: phpmyadmin/phpmyadmin
     platform: linux/amd64 # Fix for arm-based machine - using M-series chipset
     ports:
-      - 8080:80 # Changed port as its already been taken
+      - 8001:80
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
