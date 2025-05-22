@@ -7,8 +7,9 @@ pipeline {
         TESTING_ENVIRONMENT = 'staging-environment'
         PRODUCTION_ENVIRONMENT = 'production-environment'
         DEPLOY_DIR = '/Users/thech/Documents/Deakin/SIT753/Week 7, 8, 9/7.3HD/Project Reports/COMP4990-main/deploy'
-        // Other Jenkins tools added - SonarQube
+        // Other Jenkins tools added - SonarQube and New Relic
         SONARQUBE_SERVER = 'SonarQubeServer'
+        NRIA_LICENSE_KEY = credentials('newrelic-license-key')
     }
 
     stages {

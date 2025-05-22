@@ -131,9 +131,13 @@ pipeline {
                     echo "Releasing application to GitHub"
 
                     dir("${DEPLOY_DIR}") {
+                        // Clean untracked files
+                        sh 'git clean -fd'
+                        // Show status and tag release
                         sh 'git status'
                         sh 'git tag -a v${BUILD_NUMBER} -m "Release v${BUILD_NUMBER}"'
-                        sh 'git push origin --tags'
+                        // Force push instead (due to previous conflicts with existing tags)
+                        sh 'git push --force origin --tags'
                         sh 'echo "Release application to production"'
                     }
                 }
