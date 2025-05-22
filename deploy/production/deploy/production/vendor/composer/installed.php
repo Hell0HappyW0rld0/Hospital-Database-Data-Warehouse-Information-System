@@ -3,7 +3,7 @@
         'name' => 'vendor/hospital-systemm',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'aeaa882ba73da52ebb496533d11176815736fb9b',
+        'reference' => '0932af19299ebe4cabd141f9ba8b4d529a5e5c68',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -238,7 +238,7 @@
         'vendor/hospital-systemm' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'aeaa882ba73da52ebb496533d11176815736fb9b',
+            'reference' => '0932af19299ebe4cabd141f9ba8b4d529a5e5c68',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
