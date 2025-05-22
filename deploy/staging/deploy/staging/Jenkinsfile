@@ -7,8 +7,6 @@ pipeline {
         TESTING_ENVIRONMENT = 'staging-environment'
         PRODUCTION_ENVIRONMENT = 'production-environment'
         DEPLOY_DIR = '/Users/thech/Documents/Deakin/SIT753/Week 7, 8, 9/7.3HD/Project Reports/COMP4990-main/deploy'
-        // Other Jenkins tools added - SonarQube
-        SONARQUBE_SERVER = 'SonarQubeServer'
     }
 
     stages {
@@ -151,9 +149,9 @@ pipeline {
                     echo "Configuring monitoring for production"
                     // Integration with monitoring tools - New Relic version and validation
                     sh 'newrelic-infra --version'
-                    sh 'newrelic-infra --validate'
+                    sh 'newrelic-infra --license-key ${NEWRELIC_TOKEN} --validate'
                     // Check logs
-                    sh 'tail -f /var/log/newrelic-infra/newrelic-infra.log'
+                    sh 'tail -f /opt/homebrew/etc/newrelic-infra/newrelic-infra.log'
                     echo "New Relic is running"
                 }
             }
