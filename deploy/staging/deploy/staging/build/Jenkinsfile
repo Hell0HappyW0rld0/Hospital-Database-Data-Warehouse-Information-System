@@ -128,7 +128,7 @@ pipeline {
                 script {
                     echo "Releasing application to GitHub"
 
-                    dir("${DIRECTORY_PATH}") {
+                    dir("${DEPLOY_DIR}") {
                         sh 'git status'
                         sh 'git tag -a v${BUILD_NUMBER} -m "Release v${BUILD_NUMBER}"'
                         sh 'git push origin --tags'

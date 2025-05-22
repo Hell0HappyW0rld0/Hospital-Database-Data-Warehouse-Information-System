@@ -27,6 +27,8 @@ pipeline {
                     echo "Creating a build artifact (ZIP) for PHP project"
                     // Clean up temporary and unnecessary files before any build
                     echo "Cleaning up unnecessary files..."
+                    sh "rm -rf ${DEPLOY_DIR}/production"
+                    sh "rm -rf ${DEPLOY_DIR}/staging"
                     sh "rm -rf build && mkdir build"
                     sh "rm -rf .gitignore build/tmp build/*.log"
 
@@ -143,8 +145,11 @@ pipeline {
             steps {
                 script {
                     echo "Configuring monitoring for production"
-                    // Integration with monitoring tools - New Relic
-                    sh 'newrelic-infra --status'
+                    // Integration with monitoring tools - New Relic version and validation
+                    sh 'newrelic-infra --version'
+                    sh 'newrelic-infra --validate'
+                    // Check logs
+                    sh 'tail -f /var/log/newrelic-infra/newrelic-infra.log'
                     echo "New Relic is running"
                 }
             }
