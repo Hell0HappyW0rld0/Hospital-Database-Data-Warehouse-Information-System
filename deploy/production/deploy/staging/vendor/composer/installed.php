@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'vendor/hospital-systemm',
-        'pretty_version' => 'v34',
-        'version' => '34.0.0.0',
-        'reference' => 'aee7fa031eda2f96f31a72f69f14ac58322c730e',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'aeaa882ba73da52ebb496533d11176815736fb9b',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -236,9 +236,9 @@
             'dev_requirement' => false,
         ),
         'vendor/hospital-systemm' => array(
-            'pretty_version' => 'v34',
-            'version' => '34.0.0.0',
-            'reference' => 'aee7fa031eda2f96f31a72f69f14ac58322c730e',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'aeaa882ba73da52ebb496533d11176815736fb9b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

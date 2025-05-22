@@ -147,9 +147,14 @@ pipeline {
             steps {
                 script {
                     echo "Configuring monitoring for production"
-                    // Integration with monitoring tools - New Relic version and validation
-                    sh 'newrelic-infra --version'
-                    sh 'newrelic-infra --license-key ${NEWRELIC_TOKEN} --validate'
+                    // Integration with monitoring tools - New Relic version and validation and check logs
+                    withCredentials([string(credentialsId: 'NEWRELIC_TOKEN', variable: 'NEWRELIC_TOKEN')]) {
+                        sh """
+                            newrelic-infra --version
+                            export NRIA_LICENSE_KEY=${NEWRELIC_TOKEN}
+                            newrelic-infra --validate'
+                        """
+                    }
                     // Check logs
                     sh 'tail -f /opt/homebrew/etc/newrelic-infra/newrelic-infra.log'
                     echo "New Relic is running"
