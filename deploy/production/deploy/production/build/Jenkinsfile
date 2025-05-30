@@ -155,8 +155,6 @@ pipeline {
                             newrelic-infra --validate
                         """
                     }
-                    // Check logs
-                    sh 'tail -f /opt/homebrew/etc/newrelic-infra/newrelic-infra.log'
                     echo "New Relic is running"
                 }
             }

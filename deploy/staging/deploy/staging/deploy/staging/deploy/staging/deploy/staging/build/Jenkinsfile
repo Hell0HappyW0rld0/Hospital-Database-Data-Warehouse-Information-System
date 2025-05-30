@@ -152,7 +152,7 @@ pipeline {
                         sh """
                             newrelic-infra --version
                             export NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
-                            newrelic-infra --validate'
+                            newrelic-infra --validate
                         """
                     }
                     // Check logs
