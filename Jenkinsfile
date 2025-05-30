@@ -44,7 +44,7 @@ pipeline {
                     // Build, tag, and push the Docker image
                     script {
                         sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
-                        withCredentials([usernamePassword(credentialsId: 'docker-hospital', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PWD')]) {
+                        withCredentials([usernamePassword(credentialsId: '70ec7373-85a6-45ea-afe6-d6c545102506')]) {
                         sh """
                             docker login -u $DOCKER_USER -p $DOCKER_PWD ${DOCKER_REG}
                             docker push ${DOCKER_REG}:${BUILD_NUMBER}
