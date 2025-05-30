@@ -40,16 +40,16 @@ pipeline {
                 }
                 timestamps {
                     // Build, tag, and push the Docker image
-+                   script {
-+                       sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
-+                       withCredentials([usernamePassword(credentialsId: 'docker-hospital', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PWD')]) {
-+                       sh """
-+                           docker login -u $DOCKER_USER -p $DOCKER_PWD ${DOCKER_REG}
-+                           docker push ${DOCKER_REG}:${BUILD_NUMBER}
-+                       """
-+                       }
-+                   }
-+               }
+                    script {
+                        sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
+                        withCredentials([usernamePassword(credentialsId: 'docker-hospital', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PWD')]) {
+                        sh """
+                            docker login -u $DOCKER_USER -p $DOCKER_PWD ${DOCKER_REG}
+                            docker push ${DOCKER_REG}:${BUILD_NUMBER}
+                        """
+                        }
+                    }
+                }
             }
         }
 
@@ -65,19 +65,19 @@ pipeline {
                 }
                 // This will run unit tests with JUnit coverage
                 script {
-+                   sh "composer install --no-interaction"
-+                   sh "vendor/bin/phpunit --log-junit build/logs/junit.xml --coverage-clover build/logs/clover.xml"
-+                   junit 'build/logs/junit.xml'
-+
-+                   // Test the database for integration
-+                   sh "docker-compose -f docker-compose.test.yml up -d db"
-+                   sh "vendor/bin/phpunit --testsuite integration"
-+                   sh "docker-compose -f docker-compose.test.yml down"
-+
-+                   // Minimum 80% coverage
-+                   def cov = org.jenkinsci.plugins.clover.CloverPublisher.getCoveragePercent('build/logs/clover.xml')
-+                   if (cov < 80) error "Coverage too low: ${cov}%"
-+               }
+                    sh "composer install --no-interaction"
+                    sh "vendor/bin/phpunit --log-junit build/logs/junit.xml --coverage-clover build/logs/clover.xml"
+                    junit 'build/logs/junit.xml'
+ 
+                    // Test the database for integration
+                    sh "docker-compose -f docker-compose.test.yml up -d db"
+                    sh "vendor/bin/phpunit --testsuite integration"
+                    sh "docker-compose -f docker-compose.test.yml down"
+ 
+                    // Minimum 80% coverage
+                    def cov = org.jenkinsci.plugins.clover.CloverPublisher.getCoveragePercent('build/logs/clover.xml')
+                    if (cov < 80) error "Coverage too low: ${cov}%"
+                }
             }
         }
 
@@ -98,8 +98,8 @@ pipeline {
                     }
                     // Force quality check Sonar
                     timeout(time: 2, unit: 'MINUTES') {
-+                       waitForQualityGate abortPipeline: true
-+                   }
+                        waitForQualityGate abortPipeline: true
+                    }
                 }
             }
         }
@@ -128,9 +128,9 @@ pipeline {
                 }
                 // Deploy through Docker Compose
                 script {
-+                   sh "docker-compose -f docker-compose.staging.yml pull"
-+                   sh "docker-compose -f docker-compose.staging.yml up -d --build"
-+               }
+                    sh "docker-compose -f docker-compose.staging.yml pull"
+                    sh "docker-compose -f docker-compose.staging.yml up -d --build"
+                }
             }
         }
 
@@ -176,8 +176,8 @@ pipeline {
                     }
 
                     // Create GitHub release with changelog
-+                   sh "gh auth login --with-token < ~/.github_token"
-+                   sh "gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md"
+                    sh "gh auth login --with-token < ~/.github_token"
+                    sh "gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md"
                 }
             }
         }
