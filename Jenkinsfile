@@ -46,7 +46,8 @@ pipeline {
                         sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
                         withCredentials([string(credentialsId: 'Docker_Hub', variable: 'Docker_Hub')]) {
                         sh """
-                            docker login -u hellohappyw0rld
+                            echo \$Docker_Hub | docker login docker.io \
+                            --username hellohappyw0rld --password-stdin
                             docker push ${DOCKER_REG}:${BUILD_NUMBER}
                         """
                         }
