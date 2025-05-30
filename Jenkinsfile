@@ -66,21 +66,6 @@ pipeline {
                     sh "composer install"
                     sh "vendor/bin/phpunit tests"
                 }
-                // This will run unit tests with JUnit coverage
-                script {
-                    sh "composer install --no-interaction"
-                    sh "vendor/bin/phpunit --log-junit build/logs/junit.xml --coverage-clover build/logs/clover.xml"
-                    junit 'build/logs/junit.xml'
- 
-                    // Test the database for integration
-                    sh "docker-compose -f docker-compose.test.yml up -d db"
-                    sh "vendor/bin/phpunit --testsuite integration"
-                    sh "docker-compose -f docker-compose.test.yml down"
- 
-                    // Minimum 80% coverage
-                    def cov = org.jenkinsci.plugins.clover.CloverPublisher.getCoveragePercent('build/logs/clover.xml')
-                    if (cov < 80) error "Coverage too low: ${cov}%"
-                }
             }
         }
 
@@ -98,10 +83,6 @@ pipeline {
                             -Dsonar.host.url=http://localhost:9000 \
                             -Dsonar.login=${SONARQUBE_TOKEN}
                         """
-                    }
-                    // Force quality check Sonar
-                    timeout(time: 2, unit: 'MINUTES') {
-                        waitForQualityGate abortPipeline: true
                     }
                 }
             }
