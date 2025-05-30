@@ -7,6 +7,7 @@ pipeline {
         TESTING_ENVIRONMENT = 'staging-environment'
         PRODUCTION_ENVIRONMENT = 'production-environment'
         DEPLOY_DIR = '/Users/thech/Documents/Deakin/SIT753/Week 7, 8, 9/7.3HD/Project Reports/COMP4990-main/deploy'
+        DOCKER_REG = 'hellohappyw0rld/hospital-app'
     }
 
     stages {
@@ -18,7 +19,7 @@ pipeline {
             }
         }
 
-        // Stage 1: Build aertifact (ZIP)
+        // Stage 1: Build aertifact (ZIP & Docker image)
         stage('Build') {
             steps {
                 script {
@@ -29,6 +30,7 @@ pipeline {
                     sh "rm -rf ${DEPLOY_DIR}/staging"
                     sh "rm -rf build && mkdir build"
                     sh "rm -rf .gitignore build/tmp build/*.log"
+                    sh "rm -f artifact.zip"
 
                     // Create directory and copy the files
                     sh "rm -rf build && mkdir build"
@@ -37,6 +39,19 @@ pipeline {
                     sh "cd build && zip -r ../artifact.zip ."
                     // Archive the aertifact
                     archiveArtifacts artifacts: "artifact.zip", fingerprint: true
+                }
+                timestamps {
+                    // Build, tag, and push the Docker image
+                    script {
+                        sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
+                        withCredentials([string(credentialsId: 'Docker_Hub', variable: 'Docker_Hub')]) {
+                        sh """
+                            echo \$Docker_Hub | docker login docker.io \
+                            --username hellohappyw0rld --password-stdin
+                            docker push ${DOCKER_REG}:${BUILD_NUMBER}
+                        """
+                        }
+                    }
                 }
             }
         }
@@ -95,6 +110,11 @@ pipeline {
                     sh "rm -rf \"${DEPLOY_DIR}/staging\" && mkdir -p \"${DEPLOY_DIR}/staging\""
                     sh "unzip artifact.zip -d \"${DEPLOY_DIR}/staging\""
                 }
+                // Deploy through Docker Compose
+                script {
+                    sh "docker-compose -f docker-compose.staging.yml pull"
+                    sh "docker-compose -f docker-compose.staging.yml up -d --build"
+                }
             }
         }
 
@@ -138,6 +158,10 @@ pipeline {
                         sh 'git push --force origin --tags'
                         sh 'echo "Release application to production"'
                     }
+
+                    // Create GitHub release with changelog
+                    sh "gh auth login --with-token < ~/.github_token"
+                    sh "gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md"
                 }
             }
         }
