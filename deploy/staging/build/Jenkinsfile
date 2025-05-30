@@ -164,11 +164,11 @@ pipeline {
                     credentialsId: '3501f8bd-99a2-4c16-8f78-0b8bdf4d6092',
                     usernameVariable: 'GH_USER',
                     passwordVariable: 'GH_PAT')]) {
-
-                        sh """
+                        // Using single quote for interpolation, create release and auto-generated notes
+                        sh '''
                             echo "$GH_PAT" | gh auth login --with-token
-                            gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md
-                        """
+                            gh release create v'"${BUILD_NUMBER}"' --generate-notes
+                        ''', label: 'GitHub Release'
                     }
                 }
             }
