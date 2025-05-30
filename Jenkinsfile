@@ -7,6 +7,7 @@ pipeline {
         TESTING_ENVIRONMENT = 'staging-environment'
         PRODUCTION_ENVIRONMENT = 'production-environment'
         DEPLOY_DIR = '/Users/thech/Documents/Deakin/SIT753/Week 7, 8, 9/7.3HD/Project Reports/COMP4990-main/deploy'
+        DOCKER_REG = 'hellohappyw0rld/hospital-app'
     }
 
     stages {
@@ -29,6 +30,7 @@ pipeline {
                     sh "rm -rf ${DEPLOY_DIR}/staging"
                     sh "rm -rf build && mkdir build"
                     sh "rm -rf .gitignore build/tmp build/*.log"
+                    sh "rm -f artifact.zip"
 
                     // Create directory and copy the files
                     sh "rm -rf build && mkdir build"
