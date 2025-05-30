@@ -148,10 +148,10 @@ pipeline {
                 script {
                     echo "Configuring monitoring for production"
                     // Integration with monitoring tools - New Relic version and validation and check logs
-                    withCredentials([string(credentialsId: 'NEWRELIC_TOKEN', variable: 'NEWRELIC_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'NRIA_LICENSE_KEY', variable: 'NRIA_LICENSE_KEY')]) {
                         sh """
                             newrelic-infra --version
-                            export NRIA_LICENSE_KEY=${NEWRELIC_TOKEN}
+                            export NRIA_LICENSE_KEY=${NRIA_LICENSE_KEY}
                             newrelic-infra --validate'
                         """
                     }

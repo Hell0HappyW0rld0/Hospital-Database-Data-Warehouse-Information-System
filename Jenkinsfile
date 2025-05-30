@@ -18,7 +18,7 @@ pipeline {
             }
         }
 
-        // Stage 1: Build aertifact (ZIP)
+        // Stage 1: Build aertifact (ZIP & Docker image)
         stage('Build') {
             steps {
                 script {
@@ -38,6 +38,18 @@ pipeline {
                     // Archive the aertifact
                     archiveArtifacts artifacts: "artifact.zip", fingerprint: true
                 }
+                timestamps {
+                    // Build, tag, and push the Docker image
++                   script {
++                       sh "docker build --force-rm -t ${DOCKER_REG}:${BUILD_NUMBER} ."
++                       withCredentials([usernamePassword(credentialsId: 'docker-hospital', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PWD')]) {
++                       sh """
++                           docker login -u $DOCKER_USER -p $DOCKER_PWD ${DOCKER_REG}
++                           docker push ${DOCKER_REG}:${BUILD_NUMBER}
++                       """
++                       }
++                   }
++               }
             }
         }
 
@@ -51,6 +63,21 @@ pipeline {
                     sh "composer install"
                     sh "vendor/bin/phpunit tests"
                 }
+                // This will run unit tests with JUnit coverage
+                script {
++                   sh "composer install --no-interaction"
++                   sh "vendor/bin/phpunit --log-junit build/logs/junit.xml --coverage-clover build/logs/clover.xml"
++                   junit 'build/logs/junit.xml'
++
++                   // Test the database for integration
++                   sh "docker-compose -f docker-compose.test.yml up -d db"
++                   sh "vendor/bin/phpunit --testsuite integration"
++                   sh "docker-compose -f docker-compose.test.yml down"
++
++                   // Minimum 80% coverage
++                   def cov = org.jenkinsci.plugins.clover.CloverPublisher.getCoveragePercent('build/logs/clover.xml')
++                   if (cov < 80) error "Coverage too low: ${cov}%"
++               }
             }
         }
 
@@ -69,6 +96,10 @@ pipeline {
                             -Dsonar.login=${SONARQUBE_TOKEN}
                         """
                     }
+                    // Force quality check Sonar
+                    timeout(time: 2, unit: 'MINUTES') {
++                       waitForQualityGate abortPipeline: true
++                   }
                 }
             }
         }
@@ -95,6 +126,11 @@ pipeline {
                     sh "rm -rf \"${DEPLOY_DIR}/staging\" && mkdir -p \"${DEPLOY_DIR}/staging\""
                     sh "unzip artifact.zip -d \"${DEPLOY_DIR}/staging\""
                 }
+                // Deploy through Docker Compose
+                script {
++                   sh "docker-compose -f docker-compose.staging.yml pull"
++                   sh "docker-compose -f docker-compose.staging.yml up -d --build"
++               }
             }
         }
 
@@ -138,6 +174,10 @@ pipeline {
                         sh 'git push --force origin --tags'
                         sh 'echo "Release application to production"'
                     }
+
+                    // Create GitHub release with changelog
++                   sh "gh auth login --with-token < ~/.github_token"
++                   sh "gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md"
                 }
             }
         }
