@@ -142,7 +142,7 @@ pipeline {
             }
         }
 
-        // Stage 8: Release to Production (Github Releases)
+        // Stage 8: Release to Production (GitHub Releases)
         stage('Release') {
             steps {
                 script {
@@ -151,24 +151,27 @@ pipeline {
                     dir("${DEPLOY_DIR}") {
                         // Clean untracked files
                         sh 'git clean -fd'
-                        // Show status and tag release
+
+                        // Show status and tag release (BUILD_NUMBER must expand – use double-quotes)
                         sh 'git status'
-                        sh 'git tag -a v${BUILD_NUMBER} -m "Release v${BUILD_NUMBER}"'
-                        // Force push instead (due to previous conflicts with existing tags)
+                        sh "git tag -a v${BUILD_NUMBER} -m 'Release v${BUILD_NUMBER}'"
                         sh 'git push --force origin --tags'
-                        sh 'echo "Release application to production"'
                     }
 
-                    // Create GitHub release with changelog
+                    /* Authenticate gh CLI with the PAT stored in Jenkins
+                    and create the GitHub Release with auto-generated notes */
                     withCredentials([usernamePassword(
-                    credentialsId: '3501f8bd-99a2-4c16-8f78-0b8bdf4d6092',
-                    usernameVariable: 'GH_USER',
-                    passwordVariable: 'GH_PAT')]) {
-                        // Using single quote for interpolation, create release and auto-generated notes
-                        sh '''
-                            echo "$GH_PAT" | gh auth login --with-token
-                            gh release create v'"${BUILD_NUMBER}"' --generate-notes
-                        ''', label: 'GitHub Release'
+                            credentialsId: '3501f8bd-99a2-4c16-8f78-0b8bdf4d6092',
+                            usernameVariable: 'GH_USER',
+                            passwordVariable: 'GH_PAT')]) {
+
+                        sh(
+                            script: '''
+                                echo "$GH_PAT" | gh auth login --with-token
+                                gh release create v$BUILD_NUMBER --generate-notes
+                            ''',
+                            label: 'GitHub Release'
+                        )
                     }
                 }
             }

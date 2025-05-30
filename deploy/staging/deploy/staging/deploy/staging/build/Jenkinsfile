@@ -160,8 +160,16 @@ pipeline {
                     }
 
                     // Create GitHub release with changelog
-                    sh "gh auth login --with-token < ~/.github_token"
-                    sh "gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md"
+                    withCredentials([usernamePassword(
+                    credentialsId: '3501f8bd-99a2-4c16-8f78-0b8bdf4d6092',
+                    usernameVariable: 'GH_USER',
+                    passwordVariable: 'GH_PAT')]) {
+
+                        sh """
+                            echo "$GH_PAT" | gh auth login --with-token
+                            gh release create v${BUILD_NUMBER} --notes-file CHANGELOG.md
+                        """
+                    }
                 }
             }
         }
